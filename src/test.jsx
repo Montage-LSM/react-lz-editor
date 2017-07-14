@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Button} from 'antd'
 // import {LzEditor} from './index'
-import LzEditor from './editor/index.jsx'
+import LzEditor  from './editor/index.jsx'
 class Test extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       htmlContent: "",
+      importContent:"",
       markdownContent: "## 二级标题 HEAD 2 \n markdown 格式示例 \n ``` 欢迎使用 ```",
       rawContent: '{"entityMap":{"0":{"type":"image","mutability":"IMMUTABLE","data":{"src":"https://image.qiluyidian.mobi/4305350813991067' +
           '8747.jpg"}},"1":{"type":"image","mutability":"IMMUTABLE","data":{"src":"https://image.qiluyidian.mobi/430535081399106787' +
@@ -24,9 +26,15 @@ class Test extends React.Component {
     this.receiveHtml = this.receiveHtml.bind(this);
     this.receiveMarkdown = this.receiveMarkdown.bind(this);
     this.receiveRaw = this.receiveRaw.bind(this);
+    this.btnClick = this.btnClick.bind(this);
   }
   receiveHtml(content) {
     console.log("recieved HTML content", content);
+    // this.setState({
+    //   importContent:content
+    // })
+    this.state.importContent=content;
+    this.forceUpdate();
   }
   componentDidMount(){
   }
@@ -35,6 +43,10 @@ class Test extends React.Component {
   }
   receiveRaw(content) {
     console.log("recieved Raw content", content);
+  }
+  btnClick(){
+    let value =this.state.importContent;
+    console.log("btnClick",value);
   }
   render() {
     const uploadConfig = {
@@ -55,14 +67,16 @@ class Test extends React.Component {
         </div>
         <LzEditor
           active={true}
+        
           importContent={this.state.htmlContent}
           cbReceiver={this.receiveHtml}
           uploadConfig={uploadConfig}/>
         <br/>
         <br/>
+        <Button onClick={this.btnClick}>xxx</Button>
         <div>Editor demo 2 (use markdown format ):
         </div>
-        <LzEditor
+        {/* <LzEditor
           active={true}
           importContent={this.state.markdownContent}
           cbReceiver={this.receiveMarkdown}
@@ -83,7 +97,7 @@ class Test extends React.Component {
           image={false}
           video={false}
           audio={false}
-          convertFormat="raw"/>
+          convertFormat="raw"/> */}
       </div>
     );
   }

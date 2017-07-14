@@ -117,6 +117,7 @@ class EditorConcist extends React.Component {
 
     // this.focus = () => this.refs.editor.focus();//使用babel转码之后不是react组件不能用refs方式
     this.onChange = (editorState) => {
+
       this.setState({editorState});
       let that = this;
       if(that.timer){
@@ -147,6 +148,7 @@ class EditorConcist extends React.Component {
     this.toggleInlineStyle = (style) => this._toggleInlineStyle(style);
     this.customKeyBinding = this._customKeyBinding.bind(this);
     this.handlePastedText=this._handlePastedText.bind(this);
+    this.forChange=this.forChange.bind(this);
 
     /*视频音频图片*/
     this.logState = () => {
@@ -271,19 +273,37 @@ class EditorConcist extends React.Component {
       message.error("创建链接前请先选中链接文字！", 5);
     }
   }
+  forChange(){
+    let that =this;
+    let rawContentState = that.state.editorState.getCurrentContent()
+    //const rawContent = convertToRaw(rawContentState);
+    // console.log('rawContentState', rawContentState);
+    let content;
+    const ConvertFormatProps = that.props.convertFormat;
+    if(ConvertFormatProps === 'html') {
+      content = stateToHTML(rawContentState);
+    }else if (ConvertFormatProps === 'markdown') {
+      content = stateToMD(rawContentState);
+    }else if(ConvertFormatProps === 'raw') {
+      const rawContent = convertToRaw(rawContentState);
+      content = JSON.stringify(rawContent);
+    }
+    console.log("touch!!!");
+    that.props.cbReceiver(content); //富文本编辑器在
+  }
 
   _confirmLink(e) {
     // console.log("_confirmLink urlValue", urlValue)
     const {editorState, urlValue} = this.state;
+    let that=this;
     const entityKey = Entity.create('LINK', 'MUTABLE', {url: urlValue});
     this.setState({
       editorState: RichUtils.toggleLink(editorState, editorState.getSelection(), entityKey),
       showURLInput: false,
       urlValue: ''
     }, () => {
-      setTimeout(() => {
         // this.refs.editor.focus()//使用babel转码之后不是react组件不能用refs方式
-      }, 0);
+        this.forChange();
     });
   }
 
@@ -359,7 +379,7 @@ class EditorConcist extends React.Component {
   }
   //弹窗url，end
   _handleKeyCommand(command) {
-    // console.log("command",command);
+    console.log("command",command);
     const {editorState} = this.state;
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (command === 'editor-save'&&this.props.autoSave==true) {
